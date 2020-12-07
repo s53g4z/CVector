@@ -19,6 +19,6 @@ CV *CV_new(llu nelem_req, llu nelem_sz);	// Return a new CV.
 void CV_delete(CV *cv);						// Delete the CV.
 CV *CV_push_back(CV *cv, void *ep);			// Append to the CV.
 void *CV_at(CV *cv, llu index);				// Return a ptr to a CV element.
-bool CV_check(CV *cv);						// Basic self-check.
+void CV_check(CV *cv);						// Run basic self-checks on CV.
 
 #endif

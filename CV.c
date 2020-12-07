@@ -6,7 +6,7 @@ struct CVector {
 	llu nslot;  // total number of slots that can be used to hold elements
 	llu nelem;
 	llu elem_sz;
-};
+}; 
 
 // malloc().
 static void *CVmalloc(llu bytes) {
@@ -70,7 +70,7 @@ CV *CV_new(llu nelem_req, llu nelem_sz) {
 	return cv;
 }
 
-bool CV_check(CV *cv) {
+void CV_check(CV *cv) {
 	bool okay = true;
 	if (cv->nslot < cv->nelem) okay = false;
 	if (cv->arr == nullptr) okay = false;
@@ -81,5 +81,6 @@ bool CV_check(CV *cv) {
 		// print out hex
 		fprintf(stderr, "byte %llu: %.2x\n", i, *(cv->arr + i));
 	}
-	return okay;
+
+	if (!okay) abort();
 }
