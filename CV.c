@@ -6,7 +6,7 @@ struct CVector {
 	llu nslot;  // total number of slots that can be used to hold elements
 	llu nelem;
 	llu elem_sz;
-}; 
+};
 
 // malloc().
 static void *CVmalloc(llu bytes) {
@@ -25,13 +25,14 @@ static void CVprevent_llu_mul_overflow(llu val1, llu val2) {
 
 // Double the CV internal storage.
 static void CVextend(CV* cv) {
-	CVprevent_llu_mul_overflow(cv->elem_sz, 2);
-	void *newarr = CVmalloc(cv->elem_sz * 2);
 	CVprevent_llu_mul_overflow(cv->nslot, cv->elem_sz);
-	memcpy(newarr, cv->arr, cv->nslot * cv->elem_sz);
+	CVprevent_llu_mul_overflow(cv->nslot * cv->elem_sz, 2);
+	void *newarr = CVmalloc(cv->nslot * cv->elem_sz * 2);
+	CVprevent_llu_mul_overflow(cv->nslot, cv->elem_sz);
+	memcpy(newarr, cv->arr, cv->nelem * cv->elem_sz);
 	free(cv->arr);
 	cv->arr = newarr;
-	CVprevent_llu_mul_overflow(cv->nslot, 2);
+	//CVprevent_llu_mul_overflow(cv->nslot, 2);  // redundant b/c of prev check
 	cv->nslot *= 2;
 	return;
 }
@@ -57,15 +58,15 @@ void CV_delete(CV* cv) {
 	free(cv);
 }
 
-CV *CV_new(llu nelem_req, llu nelem_sz) {
+CV *CV_new(llu nelem_req, llu elem_sz) {
 	if (nelem_req == 0)
 		nelem_req++;
 	CV *cv = CVmalloc(sizeof(CV));
-	CVprevent_llu_mul_overflow(nelem_req, nelem_sz);
-	cv->arr = CVmalloc(nelem_req * nelem_sz);
+	CVprevent_llu_mul_overflow(nelem_req, elem_sz);
+	cv->arr = CVmalloc(nelem_req * elem_sz);
 	cv->nslot = nelem_req;
 	cv->nelem = 0;
-	cv->elem_sz = nelem_sz;
+	cv->elem_sz = elem_sz;
 	
 	return cv;
 }
