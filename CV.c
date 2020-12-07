@@ -71,16 +71,16 @@ CV *CV_new(llu nelem_req, llu elem_sz) {
 	return cv;
 }
 
-void CV_check(CV *cv) {
+void CV_check(CV *cv, bool quiet) {
 	bool okay = true;
 	if (cv->nslot < cv->nelem) okay = false;
 	if (cv->arr == nullptr) okay = false;
 	if (cv->elem_sz == 0) okay = false;
 	
 	CVprevent_llu_mul_overflow(cv->nslot, cv->elem_sz);
-	for (llu i = 0; i < cv->nslot * cv->elem_sz; i++) {
-		// print out hex
-		fprintf(stderr, "byte %llu: %.2x\n", i, *(cv->arr + i));
+	if (!quiet) {
+		for (llu i = 0; i < cv->nslot * cv->elem_sz; i++)
+			fprintf(stderr, "byte %llu: %.2x\n", i, *(cv->arr + i));
 	}
 
 	if (!okay) abort();

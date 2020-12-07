@@ -24,7 +24,7 @@ void fn(void) {
 	fprintf(stderr, "%d, %d\n", iat(cv, 0), iat(cv, 1));
 	*ipat(cv, 1) = 2727;
 	fprintf(stderr, "%d, %d\n", iat(cv, 0), iat(cv, 1));
-	CV_check(cv);
+	CV_check(cv, true);
 	i_cv_print(cv, 2);
 	CV_delete(cv);
 }
