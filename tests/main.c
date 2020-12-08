@@ -42,6 +42,7 @@ void test_cv_1(void) {
 	i_cv_print(cv2, 3);
 	fprintf(stderr, "-----\n");
 	CV_delete(cv);
+	CV_delete(cv2);
 }
 
 // Copy the elements of an array of long long to a CV.
