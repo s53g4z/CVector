@@ -21,7 +21,8 @@ CV *CV_push_back(CV *cv, void *ep);			// Append to the CV.
 void *CV_at(CV *cv, llu index);				// Return a ptr to a CV element.
 llu CV_size(CV *cv);						// Return the number of elements.
 void CV_clear(CV *cv);						// Delete all elements.
-void *CV_insert(CV *cv, const llu index, const void *const ep);  // Insert elem.
+void *CV_insert(CV *cv, const llu index, const void *const ep);	// Insert elem.
+void *CV_erase(CV *const cv, const llu index);	// Erase elem.
 void CV_check(CV *cv, bool quiet);			// Run basic self-checks on CV.
 
 #endif

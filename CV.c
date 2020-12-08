@@ -73,6 +73,15 @@ void *CV_insert(CV *cv, const llu index, const void *const ep) {
 	return elem_goes_here;
 }
 
+void *CV_erase(CV *const cv, const llu index) {
+	if (index >= cv->nelem)
+		abort();
+	void *elem = cv->arr + index * cv->elem_sz;
+	memmove(elem, elem + cv->elem_sz, (cv->nelem - index - 1) * cv->elem_sz);
+	cv->nelem--;
+	return elem;  // now points to the next element
+}
+
 void CV_clear(CV *cv) {
 	cv->nelem = 0;
 }

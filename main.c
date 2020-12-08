@@ -110,6 +110,22 @@ void test_cv_4__insert(llu start_size) {
 	CV_delete(cv);
 }
 
+// Test CV_erase(). The element at index is erased.
+void test_cv_5__erase(llu start_size, llu index) {
+	CV *cv = CV_new(start_size, sizeof(long long));
+	aq(CV_size(cv) == 0);
+	long long arr[] = { 70, 71, 72, 55, 73, 74, 75, 32770, 76 };
+	add_arr_to_cv(cv, arr, sizeof(arr)/sizeof(arr[0]));
+	
+	CV_erase(cv, 3);
+	ll_cv_print(cv);
+	CV_erase(cv, index);
+	ll_cv_print(cv);
+	CV_check(cv, true);
+	aq(CV_size(cv) == 7);
+	CV_delete(cv);
+}
+
 void test_cv_3__runner(void) {
 	test_cv_3__insert(0, 0);
 	test_cv_3__insert(1, 0);
@@ -127,10 +143,25 @@ void test_cv_4__runner(void) {
 	test_cv_4__insert(50);
 }
 
+void test_cv_5__runner(void) {
+	test_cv_5__erase(0, 6);
+	test_cv_5__erase(1, 6);
+	test_cv_5__erase(77, 6);
+	
+	test_cv_5__erase(0, 7);
+	test_cv_5__erase(1, 7);
+	test_cv_5__erase(81, 7);
+	
+	test_cv_5__erase(0, 0);
+	test_cv_5__erase(1, 0);
+	test_cv_5__erase(9, 0);
+}
+
 int main(int argc, char *argv[]) {
 	argv[0][0] += argc - argc;
 	test_cv_1();
 	test_cv_2();
 	test_cv_3__runner();
 	test_cv_4__runner();
+	test_cv_5__runner();
 }
