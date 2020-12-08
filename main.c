@@ -19,13 +19,14 @@ void i_cv_print(CV *cv, llu sz) {
 
 void fn(void) {
 	CV* cv = CV_new(0, sizeof(int));
-	int x = 5, y = 68;
-	CV_push_back(CV_push_back(cv, &x), &y);
-	fprintf(stderr, "%d, %d\n", iat(cv, 0), iat(cv, 1));
+	int x = 5, y = 68, z = 855;
+	CV_push_back(CV_push_back(CV_push_back(cv, &x), &y), &z);;
+	
+	i_cv_print(cv, 3);
 	*ipat(cv, 1) = 2727;
-	fprintf(stderr, "%d, %d\n", iat(cv, 0), iat(cv, 1));
+	i_cv_print(cv, 3);
+	
 	CV_check(cv, true);
-	i_cv_print(cv, 2);
 	CV_delete(cv);
 }
 

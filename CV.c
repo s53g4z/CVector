@@ -37,6 +37,14 @@ static void CVextend(CV* cv) {
 	return;
 }
 
+void CV_clear(CV *cv) {
+	cv->nelem = 0;
+}
+
+llu CV_size(CV *cv) {
+	return cv->nelem;
+}
+
 void *CV_at(CV*cv, llu index) {
 	if (index >= cv->nelem)
 		abort();
