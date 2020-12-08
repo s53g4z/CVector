@@ -35,6 +35,12 @@ void test_cv_1(void) {
 	i_cv_print(cv, 3);
 	
 	CV_check(cv, true);
+	CV *cv2 = CV_new(0, sizeof(int));
+	for (llu i = 0; i < CV_size(cv); i++)
+		CV_push_back(cv2, CV_at(cv, i));
+	CV_check(cv2, true);
+	i_cv_print(cv2, 3);
+	fprintf(stderr, "-----\n");
 	CV_delete(cv);
 }
 
