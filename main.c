@@ -38,7 +38,7 @@ void test_cv_1(void) {
 	CV_delete(cv);
 }
 
-// Push back an array of long long to a CV.
+// Copy the elements of an array of long long to a CV.
 void add_arr_to_cv(CV* cv, long long *arr, llu sz) {
 	for (llu i = 0; i < sz; i++)
 		CV_push_back(cv, &arr[i]);
@@ -59,28 +59,58 @@ void test_cv_2(void) {
 	CV_delete(cv);
 }
 
+// Print a CV full of long long elements.
+void ll_cv_print(CV* cv) {
+	for (llu i = 0; i < CV_size(cv); i++)
+		fprintf(stderr, "%lld ", *(long long *)CV_at(cv, i));
+	fprintf(stderr, "\n");
+}
+
 // Test inserting into a CV at index idx with starting size start_size.
 void test_cv_3__insert(llu start_size, llu idx) {
 	CV *cv = CV_new(start_size, sizeof(long long));
 	long long arr[] = { 25957, 29292, -62, 8875, 15, 5243, 11913, -79, 24482, 2 };
 	for (llu i = 0; i < 10; i++)
 		CV_insert(cv, idx, &arr[i]);
-	if (idx != 0) {
-		for (llu i = 0; i < idx; i++)
-			*(long long *)CV_at(cv, i) = -1;
-	}
-	for (llu i = 0; i < 10 + idx; i++)
-		fprintf(stderr, "%lld ", *(long long *)CV_at(cv, i));
-	fprintf(stderr, "\n");
+
+	aq(10 + idx == CV_size(cv));
+	ll_cv_print(cv);
 	
 	CV_check(cv, true);
 	CV_delete(cv);
 }
 
-int main(int argc, char *argv[]) {
-	argv[0][0] += argc - argc;
-	test_cv_1();
-	test_cv_2();
+// Test inserting into a CV at multiple indices with starting size start_size.
+void test_cv_4__insert(llu start_size) {
+	CV *cv = CV_new(start_size, sizeof(long long));
+	long long arr[] = { 17545, 7971, 21525, 25602, 18500 };
+	add_arr_to_cv(cv, arr, 5);  // populate CV
+
+	// test inserting at random spots
+	long long arr2[] = { 28830, 8119, 19615, 23474, 7978 };
+	CV_insert(cv, 3, &arr2[2]);
+	CV_insert(cv, 1, &arr2[4]);
+	CV_insert(cv, 10, &arr2[0]);
+	
+	aq(11 == CV_size(cv));
+	ll_cv_print(cv);
+	CV_check(cv, true);
+	CV_delete(cv);
+	
+	// more testing by inserting at random spots
+	cv = CV_new(start_size, sizeof(long long));
+	long long arr3[] = { 4, 5, 6, 7, 8 };
+	add_arr_to_cv(cv, arr3, 5);
+	long long arr4[] = { 3, 66 };
+	CV_insert(cv, 0, &arr4[0]);
+	CV_insert(cv, 3, &arr4[1]);
+	
+	ll_cv_print(cv);
+	CV_check(cv, true);
+	CV_delete(cv);
+}
+
+void test_cv_3__runner(void) {
 	test_cv_3__insert(0, 0);
 	test_cv_3__insert(1, 0);
 	test_cv_3__insert(2, 0);
@@ -88,4 +118,19 @@ int main(int argc, char *argv[]) {
 	test_cv_3__insert(0, 100);
 	test_cv_3__insert(1, 100);
 	test_cv_3__insert(3, 100);
+}
+
+void test_cv_4__runner(void) {
+	test_cv_4__insert(0);
+	test_cv_4__insert(1);
+	test_cv_4__insert(2);
+	test_cv_4__insert(50);
+}
+
+int main(int argc, char *argv[]) {
+	argv[0][0] += argc - argc;
+	test_cv_1();
+	test_cv_2();
+	test_cv_3__runner();
+	test_cv_4__runner();
 }
