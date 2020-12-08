@@ -15,6 +15,7 @@ typedef long long unsigned llu;
 struct CVector;
 typedef struct CVector CV;
 
+// The user interface consists of the functions below.
 CV *CV_new(llu nelem_req, llu nelem_sz);	// Return a new CV.
 void CV_delete(CV *cv);						// Delete the CV.
 CV *CV_push_back(CV *cv, void *ep);			// Append to the CV.
