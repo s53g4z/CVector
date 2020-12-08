@@ -24,7 +24,7 @@ static void CVprevent_llu_mul_overflow(llu val1, llu val2) {
 }
 
 // Double the CV internal storage.
-static void CVextend(CV *const cv) {
+static void CVdouble(CV *const cv) {
 	CVprevent_llu_mul_overflow(cv->nslot, cv->elem_sz);
 	CVprevent_llu_mul_overflow(cv->nslot * cv->elem_sz, 2);
 	void *newarr = CVmalloc(cv->nslot * cv->elem_sz * 2);
@@ -37,31 +37,35 @@ static void CVextend(CV *const cv) {
 	return;
 }
 
+// Expand the CV internal storage to be able to fit an element at index.
+static void CVexpand(CV *cv, const llu index) {
+	while (index >= cv->nslot) {
+		CVprevent_llu_mul_overflow(cv->nslot, 2);
+		cv->nslot *= 2;
+	}
+	unsigned char *newarr = CVmalloc(cv->nslot * cv->elem_sz);
+	memcpy(newarr, cv->arr, cv->nelem * cv->elem_sz);
+	memset(newarr + cv->nelem * cv->elem_sz, 0x00, cv->nslot - cv->nelem);
+	free(cv->arr);
+	cv->arr = newarr;
+}
+
 void *CV_insert(CV *cv, const llu index, const void *const ep) {
 	if (cv->nslot == cv->nelem)
-		CVextend(cv);
-	if (index >= cv->nslot) {  // extend internal storage
-		while (index >= cv->nslot) {
-			CVprevent_llu_mul_overflow(cv->nslot, 2);
-			cv->nslot *= 2;
-		}
-		unsigned char *newarr = CVmalloc(cv->nslot * cv->elem_sz);
-		memcpy(newarr, cv->arr, cv->nelem * cv->elem_sz);
-		memset(newarr + cv->nelem * cv->elem_sz, 0x00, cv->nslot - cv->nelem);
-		free(cv->arr);
-		cv->arr = newarr;
-	}
+		CVdouble(cv);
+	if (index >= cv->nslot)
+		CVexpand(cv, index);
 	
 	unsigned char *elem_goes_here = cv->arr + index * cv->elem_sz;
-	if (cv->nelem > index) {
+	if (index < cv->nelem) {  // shift existing elems one over if necessary
 		llu num_elems_to_move = cv->nelem - index;
 		memmove(elem_goes_here + cv->elem_sz, elem_goes_here,
 			num_elems_to_move * cv->elem_sz);
 	}
 	memcpy(elem_goes_here, ep, cv->elem_sz);
-	if (index >= cv->nelem) {
-		//memset(cv->arr + cv->nelem * cv->elem_sz, 0x00,
-		//	(index - cv->nelem) * cv->elem_sz);
+	if (index > cv->nelem) {
+		memset(cv->arr + cv->nelem * cv->elem_sz, 0x00,
+			(index - cv->nelem) * cv->elem_sz);
 		cv->nelem = index + 1;
 	} else {
 		cv->nelem++;
@@ -86,7 +90,7 @@ void *CV_at(CV*cv, llu index) {
 
 CV* CV_push_back(CV *cv, void *ep) {
 	if (cv->nslot == cv->nelem)
-		CVextend(cv);
+		CVdouble(cv);
 	CVprevent_llu_mul_overflow(cv->nelem, cv->elem_sz);  // redundant check?
 	memcpy(cv->arr + cv->nelem * cv->elem_sz, ep, cv->elem_sz);
 	cv->nelem++;
@@ -123,5 +127,6 @@ void CV_check(CV *cv, bool quiet) {
 			fprintf(stderr, "byte %llu: %.2x\n", i, *(cv->arr + i));
 	}
 
-	if (!okay) abort();
+	if (!okay)
+		abort();
 }
